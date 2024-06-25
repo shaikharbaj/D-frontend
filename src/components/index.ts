@@ -5,5 +5,6 @@ import Card from "./card/Card";
 import Loader from "./loader/Loader";
 import Form from "./form/Form";
 import Input from "./input/Input";
+import DynamicCard from "./dynamicCard/DynamicCard";
 
-export { Section, Breadcrumb, CounterCard, Card, Loader, Form, Input};
+export { Section, Breadcrumb, CounterCard, Card, Loader, Form, Input, DynamicCard};
