@@ -1,0 +1,31 @@
+1) Updating nestes obj state
+Example:
+//Nested state 
+this.state = {
+   someProperty: {
+      someOtherProperty: {
+          anotherProperty: {
+             flag: true
+          }
+          ..
+      }
+      ...
+   }
+   ...
+}
+
+//You could setState using spread operator at each level like
+
+this.setState(prevState => ({
+    ...prevState,
+    someProperty: {
+        ...prevState.someProperty,
+        someOtherProperty: {
+            ...prevState.someProperty.someOtherProperty, 
+            anotherProperty: {
+               ...prevState.someProperty.someOtherProperty.anotherProperty,
+               flag: false
+            }
+        }
+    }
+}))
