@@ -5,11 +5,12 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Link from 'next/link';
 import { Button } from '@/components/button/Button';
-import { Breadcrumb, Card, Section } from '@/components';
+import { Breadcrumb, Card, Loader, Section } from '@/components';
 
 const Sections = () => {
     const [loginData, setLoginData] = useState<any>(null);
     const [validationSchema, setValidationSchema] = useState(null);
+    const [dynamicOptions, setDynamicOptions] = useState<any>({});
     const breadcrumbData = {
         title: "Demo",
         hasButton: false,
@@ -37,6 +38,9 @@ const Sections = () => {
             .then((data) => {
                 setLoginData(data);
                 setValidationSchema(createValidationSchema(data[0].sections) as any);
+                fetch('http://localhost:5000/countries').then((responseData) => responseData.json()).then((dataCountry) => {
+                    setDynamicOptions((prevOptions:any) => ({ ...prevOptions, ['country']: dataCountry }));
+                }).catch((error) => console.error(error));
             })
             .catch((error) => console.error(error));
     }, []);
@@ -87,11 +91,18 @@ const Sections = () => {
     });
 
     if (!loginData) {
-        return <div>Loading...</div>;
+        return <Loader show={!loginData ? true : false} />
+        // return <div>Loading...</div>;
     }
 
     const onSubmit = (data: any) => {
         // Handle form submission here
+    };
+
+    const fetchDependentOptions = async (dependentField: any, value: any) => {
+        const response = await fetch(`http://localhost:5000/${value}`);
+        const data = await response.json();
+        return data;
     };
 
     const renderInput = (field: any) => {
@@ -100,6 +111,7 @@ const Sections = () => {
             case 'date':
             case 'email':
             case 'password':
+            case 'number':
                 return (
                     <input
                         type={field.type}
@@ -121,10 +133,16 @@ const Sections = () => {
                     <select
                         {...register(field.name)}
                         className={`${field.inputCssClass} ${errors[field.name] ? field.errorCssClass : "border-gray-100"}`}
+                        onChange={async (event) => {
+                            if (field.dependent) {
+                                const options = await fetchDependentOptions(field.dependent.field, event.target.value);
+                                setDynamicOptions((prevOptions:any) => ({ ...prevOptions, [field.dependent.field]: options }));
+                            }
+                        }}
                     >
-                        {field.options.map((option: any) => (
-                            <option key={option.value} value={option.value}>
-                                {option.label}
+                        {dynamicOptions[field.name]?.map((option: any) => (
+                            <option key={option.id} value={option.name}>
+                                {option.name}
                             </option>
                         ))}
                     </select>
@@ -133,6 +151,15 @@ const Sections = () => {
                 return (
                     <input
                         type={field.type}
+                        {...register(field.name)}
+                        className={field.inputCssClass}
+                        accept={field.accept}
+                    />
+                );
+            case 'textarea':
+                return (
+                    <textarea
+                        // type={field.type}
                         {...register(field.name)}
                         className={field.inputCssClass}
                         accept={field.accept}
@@ -153,7 +180,6 @@ const Sections = () => {
                             <div className="border-b border-dashed border-slate-200 dark:border-slate-700 py-3 px-4 dark:text-slate-300/70">
                                 <div className="flex-none md:flex">
                                     <h2 className="text-sm font-bold text-[#102030] dark:text-white flex-1 self-center mb-2 md:mb-0">{section.section_name}</h2>
-                                    {/* Edit loan detail */}
                                 </div>
                             </div>
 

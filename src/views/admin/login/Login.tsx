@@ -5,6 +5,7 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Loader } from '@/components';
 
 const Login = () => {
   const [loginData, setLoginData] = useState<any>(null);
@@ -71,7 +72,7 @@ const Login = () => {
   });
 
   if (!loginData) {
-    return <div>Loading...</div>;
+    return <Loader show={!loginData ? true : false} />
   }
 
   const onSubmit = (data: any) => {
