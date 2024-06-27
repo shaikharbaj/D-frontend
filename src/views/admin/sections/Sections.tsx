@@ -6,6 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import Link from 'next/link';
 import { Button } from '@/components/button/Button';
 import { Breadcrumb, Card, Loader, Section } from '@/components';
+import Select from 'react-select';
 
 const Sections = () => {
     const [loginData, setLoginData] = useState<any>(null);
@@ -39,7 +40,7 @@ const Sections = () => {
                 setLoginData(data);
                 setValidationSchema(createValidationSchema(data[0].sections) as any);
                 fetch('http://localhost:5000/countries').then((responseData) => responseData.json()).then((dataCountry) => {
-                    setDynamicOptions((prevOptions:any) => ({ ...prevOptions, ['country']: dataCountry }));
+                    setDynamicOptions((prevOptions: any) => ({ ...prevOptions, ['countries']: dataCountry }));
                 }).catch((error) => console.error(error));
             })
             .catch((error) => console.error(error));
@@ -136,7 +137,7 @@ const Sections = () => {
                         onChange={async (event) => {
                             if (field.dependent) {
                                 const options = await fetchDependentOptions(field.dependent.field, event.target.value);
-                                setDynamicOptions((prevOptions:any) => ({ ...prevOptions, [field.dependent.field]: options }));
+                                setDynamicOptions((prevOptions: any) => ({ ...prevOptions, [field.dependent.field]: options }));
                             }
                         }}
                     >
@@ -146,6 +147,27 @@ const Sections = () => {
                             </option>
                         ))}
                     </select>
+                );
+            case 'multi_select':
+                const options = field.options.map((option: any) => ({
+                    value: option.id,
+                    label: option.name,
+                }));
+                return (
+                    <Select
+                        isMulti
+                        name={field.name}
+                        options={options}
+                        {...register(field.name)}
+                        className={`${field.inputCssClass} ${errors[field.name] ? field.errorCssClass : "border-gray-100"}`}
+                        onChange={(selectedOption: any) => {
+                            if (field.dependent) {
+                                const selectedValue = selectedOption.map((option: any) => option.value);
+                                const options = fetchDependentOptions(field.dependent.field, selectedValue);
+                                setDynamicOptions((prevOptions: any) => ({ ...prevOptions, [field.dependent.field]: options }));
+                            }
+                        }}
+                    />
                 );
             case 'file':
                 return (
