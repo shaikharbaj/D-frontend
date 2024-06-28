@@ -66,7 +66,15 @@ const Add: React.FunctionComponent<IAddProps> = () => {
   }, []);
 
   //Function to handel input change
-  const handelChange = (section: string, field: string, event: any) => {};
+  const handelLabelChange = (fieldIndex: any, fieldConfig: any, event: any) => {
+    setFields(prevFields => {
+      const newFields = [...prevFields];
+      if (newFields[fieldIndex]) {
+        newFields[fieldIndex].label = event.target.value;
+      }
+      return newFields;
+    });
+  };
 
   const refreshFieldTypeSelector = () => {
     if (fieldTypeSelectorRef.current) {
@@ -110,7 +118,7 @@ const Add: React.FunctionComponent<IAddProps> = () => {
               }}
               value=""
               error=""
-              handelChange={handelChange}
+              handelChange={() => console.log('hello')}
             />
           </div>
         </Card>
@@ -141,12 +149,106 @@ const Add: React.FunctionComponent<IAddProps> = () => {
                 <div className="flex justify-between">
                   <Button onClick={addField}>Add Field</Button>
                 </div>
-                <DynamicForm fields={fields} />
+                <DynamicForm fields={fields} handelLabelChange={handelLabelChange} />
               </DynamicCard>
             </div>
             <div className=" col-span-1">
               <Card heading="Field Configuration">
-                <h1>hello</h1>
+                <div className="grid grid-cols-1">
+                  <Input
+                    fieldParentSectionCode="label"
+                    fieldConfig={{
+                      displayName: "Label",
+                      type: "text",
+                      placeholder: "Enter label",
+                      name: "label",
+                      _id: 1,
+                    }}
+                    value=""
+                    error=""
+                    //handelChange={handelChange}
+                  />
+                </div>
+                <div className="grid grid-cols-1">
+                  <Input
+                    fieldParentSectionCode="name"
+                    fieldConfig={{
+                      displayName: "Name",
+                      type: "text",
+                      placeholder: "Enter name",
+                      name: "name",
+                      _id: 1,
+                    }}
+                    value=""
+                    error=""
+                    //handelChange={handelChange}
+                  />
+                </div>
+                <div className="grid grid-cols-1">
+                  <Input
+                    fieldParentSectionCode="length"
+                    fieldConfig={{
+                      displayName: "Lenght",
+                      type: "text",
+                      placeholder: "Enter lenght",
+                      name: "length",
+                      _id: 1,
+                    }}
+                    value=""
+                    error=""
+                    //handelChange={handelChange}
+                  />
+                </div>
+                <div className="grid grid-cols-1">
+                  <Input
+                    fieldParentSectionCode="options"
+                    fieldConfig={{
+                      displayName: "Options",
+                      type: "text",
+                      placeholder: "Enter options",
+                      name: "options",
+                      _id: 1,
+                    }}
+                    value=""
+                    error=""
+                    //handelChange={handelChange}
+                  />
+                </div>
+                <div className="grid grid-cols-1">
+                  <Input
+                    fieldParentSectionCode="default_option"
+                    fieldConfig={{
+                      displayName: "Default Option",
+                      type: "text",
+                      placeholder: "Enter default option",
+                      name: "default_option",
+                      _id: 1,
+                    }}
+                    value=""
+                    error=""
+                    //handelChange={handelChange}
+                  />
+                </div>
+                <div className="mt-2">
+                  <input type="checkbox" name="is_nandatory" />
+                  <label className="text-sm font-bold text-[#102030] dark:text-gray-400 ml-2">Is Mandatory</label>
+                </div>
+                <div className="mt-2">
+                  <input type="checkbox" name="hidden" />
+                  <label className="text-sm font-bold text-[#102030] dark:text-gray-400 ml-2">Hidden</label>
+                </div>
+                <div className="mt-2">
+                  <input type="checkbox" name="read_only" />
+                  <label className="text-sm font-bold text-[#102030] dark:text-gray-400 ml-2">Read Only</label>
+                </div>
+                <div className="mt-2">
+                  <input type="checkbox" name="in_list_view" />
+                  <label className="text-sm font-bold text-[#102030] dark:text-gray-400 ml-2">In List View</label>
+                </div>
+                <div className="mt-2">
+                  <input type="checkbox" name="in_filter_list" />
+                  <label className="text-sm font-bold text-[#102030] dark:text-gray-400 ml-2">In Filter List</label>
+                </div>
               </Card>
             </div>
           </div>

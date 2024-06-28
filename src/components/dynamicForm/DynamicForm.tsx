@@ -3,9 +3,14 @@ import { Button } from "../button/Button";
 
 type Props = {
   fields: any;
+  handelLabelChange?: any
 };
 
-const DynamicForm: React.FC<Props> = ({ fields }: Props) => {
+const DynamicForm: React.FunctionComponent<Props> = ({ fields, handelLabelChange }) => {
+
+  const [currentField, setCurrentField] = React.useState(0);
+  const [fieldConfiguration, setFieldConfiguration] = React.useState({});
+
   const handelInputField = (fieldConfig: any) => {
     switch (fieldConfig.type) {
       case "text":
@@ -35,13 +40,16 @@ const DynamicForm: React.FC<Props> = ({ fields }: Props) => {
     }
   };
 
-  const renderLabelInput = () => {
+  const renderLabelInput = (fieldIndex: any, fieldConfig: any) => {
     return (
       <input
         type="text"
         placeholder="No Label"
         style={{ border: "none", outline: "none" }}
         className="text-sm font-bold text-[#102030] dark:text-gray-400"
+        onChange={(e) =>
+          handelLabelChange(fieldIndex, fieldConfig?.code, e)
+        }
       />
     );
   };
@@ -127,29 +135,36 @@ const DynamicForm: React.FC<Props> = ({ fields }: Props) => {
     return (
         <Button>Add Field</Button>
     )
-  }
+  };
+
+  const handelFieldSectionClick = (fieldIndex: any) => {
+    setCurrentField(fieldIndex);
+    setFieldConfiguration(fields[fieldIndex]);
+    console.log(fields)
+  };
 
   return (
     <>
       {fields.map((field: any, fieldIndex: number) => {
         return (
-          <div className="grid grid-cols-1 mb-4 mt-4" key={fieldIndex}>
+          <div className="grid grid-cols-1 mb-4 mt-4" key={fieldIndex} onClick={() => handelFieldSectionClick(fieldIndex)}>
             <div
               style={{
-                border: "1px solid gray",
+                border: (currentField == fieldIndex) ? "1px solid gray" : '',
                 height: field.type === "textarea" ? "110px" : "90px",
                 paddingLeft: "10px",
                 paddingRight: "10px",
               }}
             >
+              <span>{fieldIndex}</span>
               {field.type === "checkbox" ? (
                 <>
                   {handelInputField(field)}
-                  {renderLabelInput()}
+                  {renderLabelInput(fieldIndex, field)}
                 </>
               ) : (
                 <>
-                  {renderLabelInput()}
+                  {renderLabelInput(fieldIndex, field)}
                   {handelInputField(field)}
                 </>
               )}
