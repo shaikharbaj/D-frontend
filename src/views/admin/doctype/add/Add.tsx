@@ -55,8 +55,18 @@ const Add: React.FunctionComponent<IAddProps> = () => {
   const [formErrors, setFormErrors] = React.useState<any>({});
   const fieldTypeSelectorRef = React.useRef<HTMLSelectElement>(null);
   const [fields, setFields] = React.useState<Field[]>([]);
-
-  console.log(fields);
+  const [currentField, setCurrentField] = React.useState(0);
+  const [fieldConfiguration, setFieldConfiguration] = React.useState<any>({
+    label: "",
+    type: "",
+    name: "",
+    placeholder: "",
+    length: "",
+    isRequired: false,
+    readOnly: false,
+    options: "",
+    default_option: "",
+  });
 
   //useEffect to load page configuration
   React.useEffect(() => {
@@ -65,9 +75,9 @@ const Add: React.FunctionComponent<IAddProps> = () => {
     };
   }, []);
 
-  //Function to handel input change
+  //Function to handel label change for the dynamic input
   const handelLabelChange = (fieldIndex: any, fieldConfig: any, event: any) => {
-    setFields(prevFields => {
+    setFields((prevFields) => {
       const newFields = [...prevFields];
       if (newFields[fieldIndex]) {
         newFields[fieldIndex].label = event.target.value;
@@ -76,12 +86,14 @@ const Add: React.FunctionComponent<IAddProps> = () => {
     });
   };
 
+  //Function to refresh field type selector
   const refreshFieldTypeSelector = () => {
     if (fieldTypeSelectorRef.current) {
       fieldTypeSelectorRef.current.value = "";
     }
   };
 
+  //Function to add new dynamic field
   const addField = () => {
     const fieldType = fieldTypeSelectorRef.current?.value;
     if (fieldType) {
@@ -90,14 +102,47 @@ const Add: React.FunctionComponent<IAddProps> = () => {
         type: fieldType,
         name: "",
         placeholder: "",
+        length: "",
+        options: "",
+        defaultOption: "",
         isRequired: false,
         readOnly: false,
+        hidden: false,
+        inListView: false,
+        inFilterList: false
       };
       setFields([...fields, currentObj]);
       refreshFieldTypeSelector();
     } else {
       alert("Please select field type.");
     }
+  };
+
+  //Function to change current field
+  const changeCurrentField = (currentIndex: number) => {
+    setCurrentField(currentIndex);
+    setFieldConfiguration(fields[currentIndex]);
+  };
+
+  //Function to handel confuguration change
+  const handelFieldConfigurationChange = (
+    parentSectionCode: any,
+    fieldCode: any,
+    e: any
+  ) => {
+    console.log('fieldCode ', fieldCode)
+    setFieldConfiguration((prevField: any) => ({
+      ...prevField,
+      [fieldCode]: e.target.value,
+    }));
+
+    setFields((prevFields) => {
+      const newFields: any = [...prevFields];
+      if (newFields[currentField]) {
+        newFields[currentField][fieldCode] = e.target.value;
+      }
+      return newFields;
+    });
   };
 
   return (
@@ -118,7 +163,7 @@ const Add: React.FunctionComponent<IAddProps> = () => {
               }}
               value=""
               error=""
-              handelChange={() => console.log('hello')}
+              handelChange={() => console.log("hello")}
             />
           </div>
         </Card>
@@ -149,7 +194,12 @@ const Add: React.FunctionComponent<IAddProps> = () => {
                 <div className="flex justify-between">
                   <Button onClick={addField}>Add Field</Button>
                 </div>
-                <DynamicForm fields={fields} handelLabelChange={handelLabelChange} />
+                <DynamicForm
+                  fields={fields}
+                  currentField={currentField}
+                  changeCurrentField={changeCurrentField}
+                  handelLabelChange={handelLabelChange}
+                />
               </DynamicCard>
             </div>
             <div className=" col-span-1">
@@ -162,11 +212,11 @@ const Add: React.FunctionComponent<IAddProps> = () => {
                       type: "text",
                       placeholder: "Enter label",
                       name: "label",
+                      code: "label",
                       _id: 1,
                     }}
-                    value=""
-                    error=""
-                    //handelChange={handelChange}
+                    value={fieldConfiguration?.label}
+                    handelChange={handelFieldConfigurationChange}
                   />
                 </div>
                 <div className="grid grid-cols-1">
@@ -177,11 +227,26 @@ const Add: React.FunctionComponent<IAddProps> = () => {
                       type: "text",
                       placeholder: "Enter name",
                       name: "name",
+                      code: "name",
                       _id: 1,
                     }}
-                    value=""
-                    error=""
-                    //handelChange={handelChange}
+                    value={fieldConfiguration?.name}
+                    handelChange={handelFieldConfigurationChange}
+                  />
+                </div>
+                <div className="grid grid-cols-1">
+                  <Input
+                    fieldParentSectionCode="placeholder"
+                    fieldConfig={{
+                      displayName: "Placeholder",
+                      type: "text",
+                      placeholder: "Enter placeholder",
+                      name: "placeholder",
+                      code: "placeholder",
+                      _id: 1,
+                    }}
+                    value={fieldConfiguration?.placeholder}
+                    handelChange={handelFieldConfigurationChange}
                   />
                 </div>
                 <div className="grid grid-cols-1">
@@ -192,11 +257,11 @@ const Add: React.FunctionComponent<IAddProps> = () => {
                       type: "text",
                       placeholder: "Enter lenght",
                       name: "length",
+                      code: "length",
                       _id: 1,
                     }}
-                    value=""
-                    error=""
-                    //handelChange={handelChange}
+                    value={fieldConfiguration?.length}
+                    handelChange={handelFieldConfigurationChange}
                   />
                 </div>
                 <div className="grid grid-cols-1">
@@ -207,11 +272,11 @@ const Add: React.FunctionComponent<IAddProps> = () => {
                       type: "text",
                       placeholder: "Enter options",
                       name: "options",
+                      code: "options",
                       _id: 1,
                     }}
-                    value=""
-                    error=""
-                    //handelChange={handelChange}
+                    value={fieldConfiguration?.options}
+                    handelChange={handelFieldConfigurationChange}
                   />
                 </div>
                 <div className="grid grid-cols-1">
@@ -222,32 +287,42 @@ const Add: React.FunctionComponent<IAddProps> = () => {
                       type: "text",
                       placeholder: "Enter default option",
                       name: "default_option",
+                      code: "defaultOption",
                       _id: 1,
                     }}
-                    value=""
-                    error=""
-                    //handelChange={handelChange}
+                    value={fieldConfiguration?.default_option}
+                    handelChange={handelFieldConfigurationChange}
                   />
                 </div>
                 <div className="mt-2">
-                  <input type="checkbox" name="is_nandatory" />
-                  <label className="text-sm font-bold text-[#102030] dark:text-gray-400 ml-2">Is Mandatory</label>
+                  <input type="checkbox" name="is_required" />
+                  <label className="text-sm font-bold text-[#102030] dark:text-gray-400 ml-2">
+                    Is Mandatory
+                  </label>
                 </div>
                 <div className="mt-2">
                   <input type="checkbox" name="hidden" />
-                  <label className="text-sm font-bold text-[#102030] dark:text-gray-400 ml-2">Hidden</label>
+                  <label className="text-sm font-bold text-[#102030] dark:text-gray-400 ml-2">
+                    Hidden
+                  </label>
                 </div>
                 <div className="mt-2">
                   <input type="checkbox" name="read_only" />
-                  <label className="text-sm font-bold text-[#102030] dark:text-gray-400 ml-2">Read Only</label>
+                  <label className="text-sm font-bold text-[#102030] dark:text-gray-400 ml-2">
+                    Read Only
+                  </label>
                 </div>
                 <div className="mt-2">
                   <input type="checkbox" name="in_list_view" />
-                  <label className="text-sm font-bold text-[#102030] dark:text-gray-400 ml-2">In List View</label>
+                  <label className="text-sm font-bold text-[#102030] dark:text-gray-400 ml-2">
+                    In List View
+                  </label>
                 </div>
                 <div className="mt-2">
                   <input type="checkbox" name="in_filter_list" />
-                  <label className="text-sm font-bold text-[#102030] dark:text-gray-400 ml-2">In Filter List</label>
+                  <label className="text-sm font-bold text-[#102030] dark:text-gray-400 ml-2">
+                    In Filter List
+                  </label>
                 </div>
               </Card>
             </div>
