@@ -1,18 +1,20 @@
 import React from "react";
+import Draggable from "react-draggable";
 import { Button } from "../button/Button";
 
 type Props = {
   fields: any;
   currentField: any;
-  changeCurrentField?: any,
-  handelLabelChange?: any
+  changeCurrentField?: any;
+  handelLabelChange?: any;
 };
 
-const DynamicForm: React.FunctionComponent<Props> = ({ fields, currentField, changeCurrentField, handelLabelChange }) => {
-
-  //const [currentField, setCurrentField] = React.useState(0);
-  //const [fieldConfiguration, setFieldConfiguration] = React.useState({});
-
+const DynamicForm: React.FunctionComponent<Props> = ({
+  fields,
+  currentField,
+  changeCurrentField,
+  handelLabelChange,
+}) => {
   const handelInputField = (fieldConfig: any) => {
     switch (fieldConfig.type) {
       case "text":
@@ -37,23 +39,24 @@ const DynamicForm: React.FunctionComponent<Props> = ({ fields, currentField, cha
         return renderDateField(fieldConfig);
       case "datetime-local":
         return renderDateTimeField(fieldConfig);
-        case "button":
-            return renderButton(fieldConfig);  
+      case "button":
+        return renderButton(fieldConfig);
     }
   };
 
   const renderLabelInput = (fieldIndex: any, fieldConfig: any) => {
     return (
-      <input
-        type="text"
-        placeholder="No Label"
-        style={{ border: "none", outline: "none" }}
-        className="text-sm font-bold text-[#102030] dark:text-gray-400"
-        value={fieldConfig.label}
-        onChange={(e) =>
-          handelLabelChange(fieldIndex, fieldConfig?.code, e)
-        }
-      />
+      <>
+        {fieldConfig?.isRequired === true && <span>*</span>}
+        <input
+          type="text"
+          placeholder="No Label"
+          style={{ border: "none", outline: "none" }}
+          className="text-sm font-bold text-[#102030] dark:text-gray-400"
+          value={fieldConfig.label}
+          onChange={(e) => handelLabelChange(fieldIndex, fieldConfig?.code, e)}
+        />
+      </>
     );
   };
 
@@ -135,19 +138,21 @@ const DynamicForm: React.FunctionComponent<Props> = ({ fields, currentField, cha
   };
 
   const renderButton = (fieldConfig: any) => {
-    return (
-        <Button>Add Field</Button>
-    )
+    return <Button>Add Field</Button>;
   };
-
+  
   return (
     <>
       {fields.map((field: any, fieldIndex: number) => {
         return (
-          <div className="grid grid-cols-1 mb-4 mt-4" key={fieldIndex} onClick={() => changeCurrentField(fieldIndex)}>
+          <div
+            className="grid grid-cols-1 mb-4 mt-4"
+            key={field.id}
+            onClick={() => changeCurrentField(fieldIndex)}
+          >
             <div
               style={{
-                border: (currentField == fieldIndex) ? "1px solid gray" : '',
+                border: currentField == fieldIndex ? "1px solid gray" : "",
                 height: field.type === "textarea" ? "110px" : "90px",
                 paddingLeft: "10px",
                 paddingRight: "10px",

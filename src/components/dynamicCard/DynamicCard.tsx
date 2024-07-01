@@ -1,10 +1,13 @@
 import React from "react";
 
 type Props = {
+  sectionIndex: number;
+  sectionConfig?: any;
+  handelSectionName?: any;
   children: React.ReactNode;
 };
 
-const DynamicCard: React.FC<Props> = ({ children }: Props) => {
+const DynamicCard: React.FC<Props> = ({ sectionIndex, sectionConfig, handelSectionName, children }: Props) => {
   return (
     <div className="bg-white dark:bg-slate-800 shadow rounded-md w-full relative mt-3">
       <div className="flex-auto">
@@ -17,6 +20,8 @@ const DynamicCard: React.FC<Props> = ({ children }: Props) => {
                   placeholder="No Label"
                   style={{ border: "none", outline: "none" }}
                   className="text-sm font-bold text-[#102030] dark:text-gray-400"
+                  value={sectionConfig.section_name}
+                  onChange={(e) => handelSectionName(sectionIndex, e)}
                 />
                 </div>
               </h4>
