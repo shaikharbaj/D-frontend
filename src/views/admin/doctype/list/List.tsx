@@ -8,7 +8,6 @@ import { Breadcrumb, Card, Loader, Section } from "@/components";
 import { Button } from "@/components/ui/button";
 import { ComponentHOC } from "@/HOC";
 import { DataTable } from "@/components/dataTable/DataTable";
-
 interface IListProps {}
 
 let columns: ColumnDef<any>[] = [];
@@ -60,6 +59,15 @@ const List: React.FunctionComponent<IListProps> = () => {
       status: "active",
       childrens: [],
     },
+    // {
+    //   _id: "action",
+    //   name: "action",
+    //   code: "action",
+    //   displayName: "Action",
+    //   type: "column",
+    //   status: "active",
+    //   childrens: [],
+    // },
   ];
   const router = useRouter();
   const [isPageInitialized, setIsPageInitialized] = React.useState(true);
@@ -69,7 +77,9 @@ const List: React.FunctionComponent<IListProps> = () => {
   React.useEffect(() => {
     prepareColumns();
   }, []);
-
+  const handleEditAction = (docktype: any) => {
+    router.push(`/admin/doctypes/edit/${docktype?.id}`);
+  };
   //Function to prepare table column array
   const prepareColumns = () => {
     columns = [];
@@ -92,6 +102,20 @@ const List: React.FunctionComponent<IListProps> = () => {
         },
       });
     });
+    columns.push({
+      id: "edit",
+      header: "Action",
+      cell: ({ row }) => (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handleEditAction(row.original)}
+        >
+          Edit
+        </Button>
+      ),
+    });
+
     fetchData();
   };
 

@@ -29,6 +29,7 @@ const Select: React.FunctionComponent<ISelectProps> = ({
         )}
         name={fieldConfig.name}
         id={fieldConfig._id}
+        value={value}
         onChange={(e) =>
           handelChange(fieldParentSectionCode, fieldConfig?.code, e)
         }
